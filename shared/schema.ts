@@ -23,6 +23,8 @@ export const projects = pgTable("projects", {
   imageUrl: text("image_url"),
   technologies: text("technologies").array().notNull(),
   projectUrl: text("project_url"),
+  screenshots: text("screenshots").array(),
+  detailedDescription: text("detailed_description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
