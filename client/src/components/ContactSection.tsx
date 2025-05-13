@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { InsertMessage } from '@shared/schema';
+import { InsertMessage, Project } from '@shared/schema';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -26,7 +26,7 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Get projects for the dropdown
-  const { data: projects } = useQuery({
+  const { data: projects } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
   });
   
@@ -138,8 +138,8 @@ export default function ContactSection() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-dark border border-slate-700">
-                        <SelectItem value="">None</SelectItem>
-                        {projects?.map((project) => (
+                        <SelectItem value="none">None</SelectItem>
+                        {projects && projects.map((project: Project) => (
                           <SelectItem key={project.id} value={project.title}>
                             {project.title}
                           </SelectItem>
