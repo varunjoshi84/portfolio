@@ -46,8 +46,7 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
       imageUrl: "",
       technologies: "",
       projectUrl: "",
-      detailedDescription: "",
-      screenshots: []
+      detailedDescription: ""
     }
   });
   
@@ -77,6 +76,28 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
     }
   });
   
+  // Handle adding and removing screenshots
+  const addScreenshot = () => {
+    if (newScreenshotUrl && newScreenshotUrl.trim() !== '') {
+      // Validate URL format
+      try {
+        new URL(newScreenshotUrl);
+        setScreenshotUrls([...screenshotUrls, newScreenshotUrl]);
+        setNewScreenshotUrl('');
+      } catch (e) {
+        toast({
+          title: "Invalid URL",
+          description: "Please enter a valid URL for the screenshot",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const removeScreenshot = (index: number) => {
+    setScreenshotUrls(screenshotUrls.filter((_, i) => i !== index));
+  };
+  
   const onSubmit = (data: ProjectFormValues) => {
     setIsSubmitting(true);
     
@@ -88,7 +109,8 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
     
     projectMutation.mutate({
       ...data,
-      technologies
+      technologies,
+      screenshots: screenshotUrls
     });
   };
   
@@ -105,7 +127,7 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
                 <FormControl>
                   <Input 
                     placeholder="Enter project title" 
-                    className="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-white" 
+                    className="w-full px-4 py-3 bg-white text-black border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none" 
                     {...field} 
                   />
                 </FormControl>
@@ -122,11 +144,11 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
                 <FormLabel className="text-slate-300">Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-white">
+                    <SelectTrigger className="w-full px-4 py-3 bg-white text-black border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-darker border border-slate-700">
+                  <SelectContent className="bg-white border border-slate-300">
                     <SelectItem value="Web App">Web App</SelectItem>
                     <SelectItem value="Mobile App">Mobile App</SelectItem>
                     <SelectItem value="3D App">3D App</SelectItem>
@@ -145,12 +167,31 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem className="mb-6">
-              <FormLabel className="text-slate-300">Description</FormLabel>
+              <FormLabel className="text-slate-300">Short Description</FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder="Enter project description" 
-                  className="w-full px-4 py-3 bg-darker border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-white resize-none"
+                  placeholder="Enter a brief project description (shown in project cards)" 
+                  className="w-full px-4 py-3 bg-white text-black border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none resize-none"
                   rows={3}
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="detailedDescription"
+          render={({ field }) => (
+            <FormItem className="mb-6">
+              <FormLabel className="text-slate-300">Detailed Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Enter a comprehensive project description (shown on project detail page)" 
+                  className="w-full px-4 py-3 bg-white text-black border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none resize-none"
+                  rows={6}
                   {...field} 
                 />
               </FormControl>
@@ -215,12 +256,66 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
           />
         </div>
         
+        {/* Screenshots manager */}
+        <div className="mb-6 p-6 bg-slate-800 border border-slate-700 rounded-lg">
+          <h3 className="text-lg font-medium text-white mb-4">Project Screenshots</h3>
+          
+          <div className="flex items-end gap-4 mb-4">
+            <div className="flex-grow">
+              <label className="block text-sm font-medium text-slate-300 mb-1">
+                Add Screenshot URL
+              </label>
+              <input
+                type="url"
+                value={newScreenshotUrl}
+                onChange={(e) => setNewScreenshotUrl(e.target.value)}
+                placeholder="https://example.com/screenshot.jpg"
+                className="w-full px-4 py-3 bg-white text-black border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none"
+              />
+            </div>
+            <Button
+              type="button"
+              onClick={addScreenshot}
+              className="bg-secondary hover:bg-secondary/90 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add
+            </Button>
+          </div>
+          
+          {screenshotUrls.length > 0 ? (
+            <div className="space-y-3">
+              <p className="text-sm text-slate-300 mb-2">Current Screenshots:</p>
+              {screenshotUrls.map((url, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded overflow-hidden bg-slate-600 mr-3">
+                      <img src={url} alt={`Screenshot ${index + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                    <span className="text-sm text-slate-300 truncate max-w-[300px]">{url}</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => removeScreenshot(index)}
+                    className="text-red-400 hover:text-red-500 hover:bg-transparent p-1"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-slate-400 italic">No screenshots added yet</p>
+          )}
+        </div>
+        
         <div className="flex justify-end">
           <Button 
             type="button" 
             variant="outline" 
             onClick={onComplete} 
-            className="px-4 py-2 border border-slate-600 text-slate-300 rounded-lg hover:bg-dark mr-2"
+            className="px-4 py-2 border border-slate-300 text-slate-300 rounded-lg hover:bg-slate-800 mr-2"
           >
             Cancel
           </Button>
