@@ -13,19 +13,21 @@ import MemoryStore from "memorystore";
 let transporter: nodemailer.Transporter;
 
 async function setupNodemailer() {
-  if (process.env.NODE_ENV === 'production') {
-    // Use real email service in production
-    // Example: Gmail, SendGrid, etc.
-    transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-password',
-      },
-    });
-    console.log('Nodemailer configured for production');
-  } else {
-    // For development, use ethereal.email for testing emails
+  // Use Gmail for both production and development for testing
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'joshivarun266@gmail.com', // Your Gmail address
+      pass: 'zryr xmij rmww yjjp',      // Your app password
+    },
+    tls: {
+      rejectUnauthorized: false // For testing only - remove in real production
+    }
+  });
+  console.log('Nodemailer configured with Gmail');
+  
+  // Fallback to Ethereal if Gmail fails or if explicitly using development environment
+  if (process.env.USE_ETHEREAL === 'true') {
     try {
       const testAccount = await nodemailer.createTestAccount();
       

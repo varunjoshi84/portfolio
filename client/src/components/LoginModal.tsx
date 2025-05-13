@@ -78,7 +78,7 @@ export default function LoginModal() {
                   <FormControl>
                     <Input 
                       placeholder="Enter username" 
-                      className="w-full px-4 py-3 bg-dark border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-white" 
+                      className="w-full px-4 py-3 bg-dark border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-black" 
                       {...field} 
                     />
                   </FormControl>
@@ -97,7 +97,7 @@ export default function LoginModal() {
                     <Input 
                       type="password" 
                       placeholder="Enter password" 
-                      className="w-full px-4 py-3 bg-dark border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-white" 
+                      className="w-full px-4 py-3 bg-dark border border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none text-black" 
                       {...field} 
                     />
                   </FormControl>

@@ -108,7 +108,7 @@ export async function initializeDatabase() {
         description: "A full-featured online store with seamless checkout process and inventory management.",
         category: "Web App",
         imageUrl: "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?auto=format&fit=crop&w=600&h=400",
-        technologies: ["React", "Node.js", "MongoDB"],
+        technologies: JSON.stringify(["React", "Node.js", "MongoDB"]),
         projectUrl: "https://example.com/ecommerce"
       });
       
@@ -117,7 +117,7 @@ export async function initializeDatabase() {
         description: "Real-time 3D product visualization with customizable features and export options.",
         category: "3D App",
         imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=600&h=400",
-        technologies: ["Three.js", "React", "WebGL"],
+        technologies: JSON.stringify(["Three.js", "React", "WebGL"]),
         projectUrl: "https://example.com/configurator"
       });
       
@@ -126,7 +126,7 @@ export async function initializeDatabase() {
         description: "Interactive data visualization platform with real-time metrics and customizable reports.",
         category: "Dashboard",
         imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&h=400",
-        technologies: ["D3.js", "Vue", "Firebase"],
+        technologies: JSON.stringify(["D3.js", "Vue", "Firebase"]),
         projectUrl: "https://example.com/analytics"
       });
     }

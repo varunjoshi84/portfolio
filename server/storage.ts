@@ -136,7 +136,7 @@ export class DatabaseStorage implements IStorage {
   async markMessageAsRead(id: number): Promise<Message | undefined> {
     const result = await db
       .update(messages)
-      .set({ read: true })
+      .set({ read: 1 })
       .where(eq(messages.id, id))
       .returning();
     

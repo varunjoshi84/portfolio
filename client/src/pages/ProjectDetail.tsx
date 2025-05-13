@@ -148,7 +148,7 @@ export default function ProjectDetail() {
                   Project Screenshots
                 </h2>
                 
-                {project.screenshots && project.screenshots.length > 0 ? (
+                {Array.isArray(project.screenshots) && project.screenshots.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {project.screenshots.map((screenshot, index) => (
                       <div 
@@ -180,7 +180,7 @@ export default function ProjectDetail() {
                   <div>
                     <h4 className="text-sm font-medium text-slate-400 mb-1">Technologies</h4>
                     <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, index) => (
+                      {(Array.isArray(project.technologies) ? project.technologies : typeof project.technologies === 'string' ? project.technologies.split(',').map(t => t.trim()).filter(Boolean) : []).map((tech, index) => (
                         <span key={index} className="text-xs bg-slate-800 px-2 py-1 rounded">
                           {tech}
                         </span>

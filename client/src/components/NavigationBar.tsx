@@ -35,7 +35,7 @@ export default function NavigationBar({ isAdmin = false }: NavigationBarProps) {
       <nav className={`fixed top-0 left-0 w-full z-50 bg-darker/90 backdrop-blur-md border-b border-primary/20 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
         <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
           <div className="flex items-center">
-            <Link href="/" className="text-xl sm:text-2xl font-bold gradient-text">DevFolio</Link>
+            <Link href="/" className="text-xl sm:text-2xl font-bold gradient-text">TheCodeOrbit</Link>
             <span className="ml-2 sm:ml-4 px-2 sm:px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">Admin</span>
           </div>
           <div className="flex items-center">
@@ -54,7 +54,7 @@ export default function NavigationBar({ isAdmin = false }: NavigationBarProps) {
   return (
     <nav className={`fixed top-0 left-0 w-full z-50 bg-darker/80 backdrop-blur-md border-b border-primary/10 transition-all duration-300 ${scrolled ? 'py-2' : 'py-4'}`}>
       <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-        <Link href="/" className="text-xl sm:text-2xl font-bold gradient-text">DevFolio</Link>
+        <Link href="/" className="text-xl sm:text-2xl font-bold gradient-text">TheCodeOrbit</Link>
         
         {/* Mobile menu button */}
         <button 
