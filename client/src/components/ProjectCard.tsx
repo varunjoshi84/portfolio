@@ -30,7 +30,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     category, 
     imageUrl, 
     technologies, 
-    projectUrl 
+    projectUrl,
+    screenshots,
+    detailedDescription,
+    id
   } = project;
 
   return (
