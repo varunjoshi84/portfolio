@@ -105,27 +105,27 @@ export default function ContactSection() {
     <section 
       id="contact" 
       ref={sectionRef}
-      className="py-24 bg-dark relative overflow-hidden"
+      className="py-16 sm:py-20 md:py-24 bg-dark relative overflow-hidden"
     >
       {/* Background elements with animation */}
       <div className="absolute inset-0 bg-gradient-to-b from-darker to-dark z-0">
-        <div className="absolute top-1/3 right-1/5 w-40 h-40 bg-primary/10 rounded-full filter blur-3xl pulse-slow"></div>
-        <div className="absolute bottom-1/4 left-1/5 w-60 h-60 bg-secondary/10 rounded-full filter blur-3xl pulse-slow"></div>
+        <div className="absolute top-1/3 right-1/5 w-32 sm:w-40 h-32 sm:h-40 bg-primary/10 rounded-full filter blur-3xl pulse-slow"></div>
+        <div className="absolute bottom-1/4 left-1/5 w-48 sm:w-60 h-48 sm:h-60 bg-secondary/10 rounded-full filter blur-3xl pulse-slow"></div>
       </div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className={`text-center mb-16 ${isVisible ? 'slide-up' : 'opacity-0'}`}>
-            <h2 className="text-4xl font-bold mb-4">Get In <span className="gradient-text">Touch</span></h2>
-            <p className="text-slate-300 max-w-2xl mx-auto">
+          <div className={`text-center mb-10 md:mb-16 ${isVisible ? 'slide-up' : 'opacity-0'}`}>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Get In <span className="gradient-text">Touch</span></h2>
+            <p className="text-slate-300 max-w-2xl mx-auto px-2">
               Have a project in mind or want to collaborate? Send me a message and I'll get back to you as soon as possible.
             </p>
           </div>
           
           <div className={`${isVisible ? 'scale-in delay-200' : 'opacity-0'}`}>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="bg-darker p-8 rounded-xl border border-primary/20 shadow-xl glow hover:shadow-primary/30 transition-all duration-300">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="bg-darker p-4 sm:p-6 md:p-8 rounded-xl border border-primary/20 shadow-xl glow hover:shadow-primary/30 transition-all duration-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6">
                   <FormField
                     control={form.control}
                     name="name"

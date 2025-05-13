@@ -46,27 +46,71 @@ export class DatabaseStorage implements IStorage {
 
   // Project methods
   async getProjects(): Promise<Project[]> {
-    return await db.select().from(projects).orderBy(desc(projects.createdAt));
+    const results = await db.select().from(projects).orderBy(desc(projects.createdAt));
+    // Parse JSON strings back to arrays for SQLite
+    return results.map(project => ({
+      ...project,
+      technologies: JSON.parse(project.technologies as string),
+      screenshots: project.screenshots ? JSON.parse(project.screenshots as string) : undefined
+    }));
   }
 
   async getProject(id: number): Promise<Project | undefined> {
     const result = await db.select().from(projects).where(eq(projects.id, id));
-    return result[0];
+    if (!result[0]) return undefined;
+    
+    // Parse JSON strings back to arrays for SQLite
+    return {
+      ...result[0],
+      technologies: JSON.parse(result[0].technologies as string),
+      screenshots: result[0].screenshots ? JSON.parse(result[0].screenshots as string) : undefined
+    };
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
-    const result = await db.insert(projects).values(insertProject).returning();
-    return result[0];
+    // Convert arrays to JSON strings for SQLite
+    const dbProject = {
+      ...insertProject,
+      technologies: JSON.stringify(insertProject.technologies),
+      screenshots: insertProject.screenshots ? JSON.stringify(insertProject.screenshots) : undefined
+    };
+    
+    const result = await db.insert(projects).values(dbProject).returning();
+    
+    // Parse JSON strings back to arrays
+    return {
+      ...result[0],
+      technologies: JSON.parse(result[0].technologies as string),
+      screenshots: result[0].screenshots ? JSON.parse(result[0].screenshots as string) : undefined
+    };
   }
 
   async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
+    // Convert arrays to JSON strings for SQLite if they exist
+    const dbProject = {...project};
+    
+    if (dbProject.technologies) {
+      dbProject.technologies = JSON.stringify(dbProject.technologies);
+    }
+    
+    if (dbProject.screenshots) {
+      dbProject.screenshots = JSON.stringify(dbProject.screenshots);
+    }
+    
     const result = await db
       .update(projects)
-      .set(project)
+      .set(dbProject)
       .where(eq(projects.id, id))
       .returning();
     
-    return result[0];
+    if (!result[0]) return undefined;
+    
+    // Parse JSON strings back to arrays
+    return {
+      ...result[0],
+      technologies: JSON.parse(result[0].technologies as string),
+      screenshots: result[0].screenshots ? JSON.parse(result[0].screenshots as string) : undefined
+    };
   }
 
   async deleteProject(id: number): Promise<boolean> {

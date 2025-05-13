@@ -24,19 +24,19 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section id="home" className="relative h-screen flex items-center bg-gradient-to-b from-gray-900 to-slate-900">
+    <section id="home" className="relative min-h-screen flex items-center bg-gradient-to-b from-gray-900 to-slate-900 py-20 md:py-0">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-primary/20 rounded-full filter blur-3xl pulse-slow"></div>
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-secondary/20 rounded-full filter blur-3xl pulse-slow"></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-accent/20 rounded-full filter blur-3xl pulse-slow"></div>
+        <div className="absolute top-1/4 right-1/4 w-52 sm:w-64 md:w-72 h-52 sm:h-64 md:h-72 bg-primary/20 rounded-full filter blur-3xl pulse-slow"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 bg-secondary/20 rounded-full filter blur-3xl pulse-slow"></div>
+        <div className="absolute top-1/2 left-1/2 w-48 sm:w-56 md:w-64 h-48 sm:h-56 md:h-64 bg-accent/20 rounded-full filter blur-3xl pulse-slow"></div>
       </div>
       
-      <div className="container mx-auto px-6 z-10 relative">
+      <div className="container mx-auto px-4 sm:px-6 z-10 relative">
         <div className="max-w-2xl">
-          <h1 className="slide-right text-5xl md:text-7xl font-bold mb-4">
+          <h1 className="slide-right text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4">
             Creative <span className="gradient-text">Developer</span> Portfolio
           </h1>
-          <p className="slide-right delay-100 text-xl text-slate-300 mb-8">
+          <p className="slide-right delay-100 text-lg sm:text-xl text-slate-300 mb-8">
             Building immersive digital experiences with modern technologies
           </p>
           <div className="slide-right delay-200 flex flex-wrap gap-4">
@@ -51,22 +51,6 @@ export default function HeroSection() {
               className="px-6 py-3 border border-primary text-primary hover:bg-primary/10 rounded-lg hover:-translate-y-1 active:scale-95 transition-all duration-300"
             >
               Get in Touch
-            </a>
-          </div>
-          
-          <div className="mt-12 fade-in delay-500">
-            <a 
-              href="#projects" 
-              className="flex flex-col items-center text-white/70 hover:text-white transition-colors"
-              aria-label="Scroll down"
-            >
-              <span className="text-sm mb-2">Scroll Down</span>
-              <div className="w-8 h-8 flex items-center justify-center bounce">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14" />
-                  <path d="m19 12-7 7-7-7" />
-                </svg>
-              </div>
             </a>
           </div>
         </div>

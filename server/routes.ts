@@ -13,20 +13,46 @@ import MemoryStore from "memorystore";
 let transporter: nodemailer.Transporter;
 
 async function setupNodemailer() {
-  // For development, use ethereal.email for testing emails
-  const testAccount = await nodemailer.createTestAccount();
-  
-  transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false,
-    auth: {
-      user: testAccount.user,
-      pass: testAccount.pass,
-    },
-  });
-  
-  console.log(`Nodemailer test account: ${testAccount.web}`);
+  if (process.env.NODE_ENV === 'production') {
+    // Use real email service in production
+    // Example: Gmail, SendGrid, etc.
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER || 'your-email@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your-password',
+      },
+    });
+    console.log('Nodemailer configured for production');
+  } else {
+    // For development, use ethereal.email for testing emails
+    try {
+      const testAccount = await nodemailer.createTestAccount();
+      
+      transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+      
+      console.log(`Nodemailer test account: ${testAccount.web}`);
+    } catch (error) {
+      console.error('Failed to create ethereal test account:', error);
+      // Fallback to a console logger when ethereal setup fails
+      transporter = {
+        sendMail: (options: any) => {
+          console.log('Email would be sent with these options:');
+          console.log(options);
+          return Promise.resolve({ messageId: 'test-id-' + Date.now() });
+        }
+      } as any;
+      console.log('Using console transport for emails (development fallback)');
+    }
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -251,15 +277,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Send emails
+      let emailStatus = { sent: false, error: null as string | null };
+      
       try {
-        await transporter.sendMail(userMailOptions);
-        await transporter.sendMail(adminMailOptions);
+        const userEmailInfo = await transporter.sendMail(userMailOptions);
+        console.log('User confirmation email sent:', userEmailInfo.messageId);
+        
+        if (process.env.NODE_ENV === 'development') {
+          // In development, log the ethereal URL for viewing the email
+          console.log('Preview user email at:', nodemailer.getTestMessageUrl(userEmailInfo));
+        }
+        
+        const adminEmailInfo = await transporter.sendMail(adminMailOptions);
+        console.log('Admin notification email sent:', adminEmailInfo.messageId);
+        
+        if (process.env.NODE_ENV === 'development') {
+          // In development, log the ethereal URL for viewing the email
+          console.log('Preview admin email at:', nodemailer.getTestMessageUrl(adminEmailInfo));
+        }
+        
+        emailStatus.sent = true;
       } catch (error) {
         console.error("Error sending email:", error);
-        // Continue with the response even if email fails
+        emailStatus.error = process.env.NODE_ENV === 'development' ? String(error) : 'Email delivery issue';
       }
       
-      res.status(201).json(message);
+      // Return the message with email status
+      res.status(201).json({
+        ...message,
+        emailStatus
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: "Invalid message data", errors: error.errors });

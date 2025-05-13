@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest } from '../lib/queryClient';
 import { Project } from '@shared/schema';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from './ui/button';
+import { useToast } from '../hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Skeleton } from './ui/skeleton';
 import { Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import ProjectForm from './ProjectForm';
 
 export default function ProjectList() {
   const queryClient = useQueryClient();

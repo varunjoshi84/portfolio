@@ -1,10 +1,11 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, blob } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { sql } from "drizzle-orm";
 
 // User schema for admin authentication
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
@@ -15,17 +16,17 @@ export const insertUserSchema = createInsertSchema(users).pick({
 });
 
 // Project schema for portfolio projects
-export const projects = pgTable("projects", {
-  id: serial("id").primaryKey(),
+export const projects = sqliteTable("projects", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(),
   imageUrl: text("image_url"),
-  technologies: text("technologies").array().notNull(),
+  technologies: text("technologies").notNull(), // SQLite doesn't support arrays, store as JSON string
   projectUrl: text("project_url"),
-  screenshots: text("screenshots").array(),
+  screenshots: text("screenshots"), // SQLite doesn't support arrays, store as JSON string
   detailedDescription: text("detailed_description"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: integer("created_at").notNull().default(sql`(unixepoch())`),
 });
 
 export const insertProjectSchema = createInsertSchema(projects).omit({
@@ -34,14 +35,14 @@ export const insertProjectSchema = createInsertSchema(projects).omit({
 });
 
 // Contact messages schema
-export const messages = pgTable("messages", {
-  id: serial("id").primaryKey(),
+export const messages = sqliteTable("messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   email: text("email").notNull(),
   message: text("message").notNull(),
   projectInterest: text("project_interest"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  read: boolean("read").default(false),
+  createdAt: integer("created_at").notNull().default(sql`(unixepoch())`),
+  read: integer("read").default(0),
 });
 
 export const insertMessageSchema = createInsertSchema(messages).omit({
