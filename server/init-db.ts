@@ -89,7 +89,7 @@ export async function initializeDatabase() {
       console.log("Creating admin user...");
       await storage.createUser({
         username: "admin",
-        password: "admin123" // In a real app, this would be hashed
+        password: "iamzombie" // In a real app, this would be hashed
       });
     }
     
