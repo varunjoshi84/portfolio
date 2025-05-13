@@ -1,7 +1,8 @@
 import { Project } from '@shared/schema';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from './ui/badge';
+import { Card, CardContent, CardHeader } from './ui/card';
 import { ChevronRight } from 'lucide-react';
+import { Link } from 'wouter';
 
 interface ProjectCardProps {
   project: Project;
@@ -60,15 +61,27 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           ))}
         </div>
         
-        <a 
-          href={projectUrl || "#"} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className={`text-${category === '3D App' ? 'secondary' : category === 'Dashboard' ? 'accent' : 'primary'} hover:underline text-sm font-medium flex items-center`}
-        >
-          View Details
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </a>
+        <div className="flex gap-4">
+          {projectUrl && (
+            <a 
+              href={projectUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`text-slate-300 hover:underline text-sm font-medium flex items-center`}
+            >
+              Live Demo
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </a>
+          )}
+          
+          <Link 
+            to={`/project/${project.id}`}
+            className={`text-${category === '3D App' ? 'secondary' : category === 'Dashboard' ? 'accent' : 'primary'} hover:underline text-sm font-medium flex items-center`}
+          >
+            View Details
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

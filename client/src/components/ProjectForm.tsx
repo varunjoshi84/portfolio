@@ -3,14 +3,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { apiRequest } from '../lib/queryClient';
+import { useToast } from '../hooks/use-toast';
+import { Button } from './ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { InsertProject } from '@shared/schema';
+import { Plus, Trash2 } from 'lucide-react';
 
 // Extended schema for project form
 const projectFormSchema = z.object({
@@ -19,7 +20,8 @@ const projectFormSchema = z.object({
   category: z.string().min(1, { message: "Category is required" }),
   imageUrl: z.string().url({ message: "Must be a valid URL" }).optional().or(z.literal('')),
   technologies: z.string().min(1, { message: "Technologies are required" }),
-  projectUrl: z.string().url({ message: "Must be a valid URL" }).optional().or(z.literal(''))
+  projectUrl: z.string().url({ message: "Must be a valid URL" }).optional().or(z.literal('')),
+  detailedDescription: z.string().optional().or(z.literal('')),
 });
 
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
@@ -32,6 +34,8 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [screenshotUrls, setScreenshotUrls] = useState<string[]>([]);
+  const [newScreenshotUrl, setNewScreenshotUrl] = useState('');
   
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
@@ -41,7 +45,9 @@ export default function ProjectForm({ onComplete }: ProjectFormProps) {
       category: "",
       imageUrl: "",
       technologies: "",
-      projectUrl: ""
+      projectUrl: "",
+      detailedDescription: "",
+      screenshots: []
     }
   });
   
