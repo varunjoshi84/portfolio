@@ -3,7 +3,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Create a synchronous connection to make initialization easier
-let db;
+// We'll use 'any' type for now to make the deployment work
+// In the future, we can properly type this with a more specific approach
+let db: any;
 
 // Create database connection immediately rather than with promises
 try {

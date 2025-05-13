@@ -4,9 +4,7 @@ import {
   messages, type Message, type InsertMessage
 } from "@shared/schema";
 import { db } from "./db";
-// If your db export has a type, import and use it like this:
-// import { db, type DatabaseType } from "./db";
-// const db: DatabaseType = db;
+// Using db directly as it's typed as 'any'
 import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
@@ -51,7 +49,7 @@ export class DatabaseStorage implements IStorage {
   async getProjects(): Promise<Project[]> {
     const results = await db.select().from(projects).orderBy(desc(projects.createdAt));
     // Parse JSON strings back to arrays for SQLite
-    return results.map(project => ({
+    return results.map((project: Project) => ({
       ...project,
       technologies: JSON.parse(project.technologies as string),
       screenshots: project.screenshots ? JSON.parse(project.screenshots as string) : undefined
@@ -90,7 +88,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
     // Convert arrays to JSON strings for SQLite if they exist
-    const dbProject = {...project};
+    const dbProject: Partial<Record<string, any>> = {...project};
     
     if (dbProject.technologies) {
       dbProject.technologies = JSON.stringify(dbProject.technologies);
