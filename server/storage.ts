@@ -3,6 +3,8 @@ import {
   projects, type Project, type InsertProject,
   messages, type Message, type InsertMessage
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -25,154 +27,83 @@ export interface IStorage {
   deleteMessage(id: number): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private projects: Map<number, Project>;
-  private messages: Map<number, Message>;
-  private userId: number;
-  private projectId: number;
-  private messageId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.projects = new Map();
-    this.messages = new Map();
-    this.userId = 1;
-    this.projectId = 1;
-    this.messageId = 1;
-    
-    // Add a default admin user
-    this.createUser({
-      username: "admin",
-      password: "admin123" // In a real app, this would be hashed
-    });
-    
-    // Add some sample projects
-    this.createProject({
-      title: "Modern E-commerce Platform",
-      description: "A full-featured online store with seamless checkout process and inventory management.",
-      category: "Web App",
-      imageUrl: "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?auto=format&fit=crop&w=600&h=400",
-      technologies: ["React", "Node.js", "MongoDB"],
-      projectUrl: "https://example.com/ecommerce"
-    });
-    
-    this.createProject({
-      title: "Interactive Product Configurator",
-      description: "Real-time 3D product visualization with customizable features and export options.",
-      category: "3D App",
-      imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=600&h=400",
-      technologies: ["Three.js", "React", "WebGL"],
-      projectUrl: "https://example.com/configurator"
-    });
-    
-    this.createProject({
-      title: "Analytics Dashboard",
-      description: "Interactive data visualization platform with real-time metrics and customizable reports.",
-      category: "Dashboard",
-      imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&h=400",
-      technologies: ["D3.js", "Vue", "Firebase"],
-      projectUrl: "https://example.com/analytics"
-    });
-  }
-
+export class DatabaseStorage implements IStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username
-    );
+    const result = await db.select().from(users).where(eq(users.username, username));
+    return result[0];
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userId++;
-    const now = new Date();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const result = await db.insert(users).values(insertUser).returning();
+    return result[0];
   }
 
   // Project methods
   async getProjects(): Promise<Project[]> {
-    return Array.from(this.projects.values()).sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
+    return await db.select().from(projects).orderBy(desc(projects.createdAt));
   }
 
   async getProject(id: number): Promise<Project | undefined> {
-    return this.projects.get(id);
+    const result = await db.select().from(projects).where(eq(projects.id, id));
+    return result[0];
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
-    const id = this.projectId++;
-    const now = new Date();
-    const project: Project = { 
-      ...insertProject, 
-      id, 
-      createdAt: now
-    };
-    this.projects.set(id, project);
-    return project;
+    const result = await db.insert(projects).values(insertProject).returning();
+    return result[0];
   }
 
   async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
-    const existingProject = this.projects.get(id);
-    if (!existingProject) return undefined;
-
-    const updatedProject: Project = {
-      ...existingProject,
-      ...project,
-    };
-    this.projects.set(id, updatedProject);
-    return updatedProject;
+    const result = await db
+      .update(projects)
+      .set(project)
+      .where(eq(projects.id, id))
+      .returning();
+    
+    return result[0];
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    return this.projects.delete(id);
+    await db.delete(projects).where(eq(projects.id, id));
+    return true; // In PostgreSQL, success is indicated by not throwing an error
   }
 
   // Message methods
   async getMessages(): Promise<Message[]> {
-    return Array.from(this.messages.values()).sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
+    return await db.select().from(messages).orderBy(desc(messages.createdAt));
   }
 
   async getMessage(id: number): Promise<Message | undefined> {
-    return this.messages.get(id);
+    const result = await db.select().from(messages).where(eq(messages.id, id));
+    return result[0];
   }
 
   async createMessage(insertMessage: InsertMessage): Promise<Message> {
-    const id = this.messageId++;
-    const now = new Date();
-    const message: Message = { 
-      ...insertMessage, 
-      id, 
-      createdAt: now,
-      read: false
-    };
-    this.messages.set(id, message);
-    return message;
+    const result = await db.insert(messages).values(insertMessage).returning();
+    return result[0];
   }
 
   async markMessageAsRead(id: number): Promise<Message | undefined> {
-    const message = this.messages.get(id);
-    if (!message) return undefined;
-
-    const updatedMessage: Message = {
-      ...message,
-      read: true
-    };
-    this.messages.set(id, updatedMessage);
-    return updatedMessage;
+    const result = await db
+      .update(messages)
+      .set({ read: true })
+      .where(eq(messages.id, id))
+      .returning();
+    
+    return result[0];
   }
 
   async deleteMessage(id: number): Promise<boolean> {
-    return this.messages.delete(id);
+    await db.delete(messages).where(eq(messages.id, id));
+    return true; // In PostgreSQL, success is indicated by not throwing an error
   }
 }
 
-export const storage = new MemStorage();
+// Initialize with database storage
+export const storage = new DatabaseStorage();
