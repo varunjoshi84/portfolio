@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import { registerRoutes } from "./routes";
 import path from "path";
+import { initializeDatabase } from "./init-db";
 
+// Create Express app for serverless function
 const app = express();
 
 // Middleware
@@ -13,9 +15,24 @@ app.use(cors());
 const clientBuildPath = path.join(__dirname, "../client/dist");
 app.use(express.static(clientBuildPath));
 
-// Register all API routes
+// Initialize database
+let dbInitialized = false;
+
+// Serverless function handler for Vercel
 export default async (req: any, res: any) => {
-  const httpServer = await registerRoutes(app);
+  // Initialize database only once
+  if (!dbInitialized) {
+    try {
+      await initializeDatabase();
+      dbInitialized = true;
+      console.log('Database initialized for serverless function');
+    } catch (error) {
+      console.error('Error initializing database:', error);
+    }
+  }
+  
+  // Register all API routes
+  await registerRoutes(app);
   
   // Forward the request to Express
   return app(req, res);
