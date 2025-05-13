@@ -1,9 +1,14 @@
 import { db } from "./db";
-import { users, projects, messages } from "@shared/schema";
+import type { DrizzleD1Database } from "drizzle-orm/d1"; // Adjust the import path if needed
+const dbTyped = db;
+
+// If db is a default export or you know its type, you can do:
+// import { db } from "./db";
+// const db: DrizzleD1Database = db;
+import { users, projects } from "@shared/schema";
 import { storage } from "./storage";
 import { eq, count } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -69,9 +74,7 @@ export async function initializeDatabase() {
     // Create tables if they don't exist
     await createTables();
     
-    // Run a simple query to check database connection
-    try {
-      await db.select().from(users).limit(1);
+      await dbTyped.select().from(users).limit(1);
       console.log("Database connected successfully");
     } catch (error) {
       console.error("Error connecting to database:", error);
@@ -79,7 +82,7 @@ export async function initializeDatabase() {
     }
     
     // Check if admin user exists
-    const adminExists = await db
+    const adminExists = await dbTyped
       .select({ value: count() })
       .from(users)
       .where(eq(users.username, "admin"));
@@ -94,7 +97,7 @@ export async function initializeDatabase() {
     }
     
     // Check if projects exist
-    const projectsExist = await db
+    const projectsExist = await dbTyped
       .select({ value: count() })
       .from(projects);
     
@@ -135,4 +138,3 @@ export async function initializeDatabase() {
   } catch (error) {
     console.error("Error initializing database:", error);
   }
-}

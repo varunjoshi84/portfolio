@@ -4,6 +4,9 @@ import {
   messages, type Message, type InsertMessage
 } from "@shared/schema";
 import { db } from "./db";
+// If your db export has a type, import and use it like this:
+// import { db, type DatabaseType } from "./db";
+// const db: DatabaseType = db;
 import { eq, desc, asc } from "drizzle-orm";
 
 export interface IStorage {
@@ -136,7 +139,7 @@ export class DatabaseStorage implements IStorage {
   async markMessageAsRead(id: number): Promise<Message | undefined> {
     const result = await db
       .update(messages)
-      .set({ read: 1 })
+      .set({ read: true })
       .where(eq(messages.id, id))
       .returning();
     

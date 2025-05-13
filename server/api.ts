@@ -4,24 +4,35 @@ import { registerRoutes } from "./routes";
 import path from "path";
 import { initializeDatabase } from "./init-db";
 
-// Create Express app for serverless function
-const app = express();
-
-// Middleware
-app.use(express.json());
-app.use(cors());
-
-// Static files serving for production
-const clientBuildPath = path.join(__dirname, "../client/dist");
-app.use(express.static(clientBuildPath));
-
-// Initialize database
+// Initialize database once for serverless function
 let dbInitialized = false;
+let appInitialized = false;
+let app: express.Express;
 
 // Serverless function handler for Vercel
 export default async (req: any, res: any) => {
-  // Initialize database only once
-  if (!dbInitialized) {
+  // Only initialize these things once per serverless instance
+  if (!appInitialized) {
+    console.log('Initializing Express app for serverless function');
+    
+    // Create Express app
+    app = express();
+    
+    // Middleware
+    app.use(express.json());
+    app.use(cors({
+      origin: process.env.VERCEL_URL || '*',
+      credentials: true
+    }));
+    
+    // Static files serving
+    if (process.env.NODE_ENV === 'production') {
+      const distPath = path.join(process.cwd(), 'dist');
+      console.log(`Serving static files from: ${distPath}`);
+      app.use(express.static(distPath));
+    }
+    
+    // Initialize database
     try {
       await initializeDatabase();
       dbInitialized = true;
@@ -29,10 +40,12 @@ export default async (req: any, res: any) => {
     } catch (error) {
       console.error('Error initializing database:', error);
     }
+    
+    // Register all API routes
+    await registerRoutes(app);
+    appInitialized = true;
+    console.log('Express app fully initialized');
   }
-  
-  // Register all API routes
-  await registerRoutes(app);
   
   // Forward the request to Express
   return app(req, res);
@@ -41,7 +54,15 @@ export default async (req: any, res: any) => {
 // Standard server start for local development
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
-  
+
+  // Initialize Express app for local development
+  app = express();
+  app.use(express.json());
+  app.use(cors({
+    origin: process.env.VERCEL_URL || '*',
+    credentials: true
+  }));
+
   registerRoutes(app).then((server) => {
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);

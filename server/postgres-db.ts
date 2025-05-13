@@ -5,8 +5,11 @@ import * as schema from './schema';
 // For Vercel PostgreSQL
 let client;
 
-if (process.env.POSTGRES_URL) {
-  client = postgres(process.env.POSTGRES_URL_NON_POOLING);
+if (process.env.POSTGRES_URL_NON_POOLING) {
+  client = postgres(process.env.POSTGRES_URL_NON_POOLING, { 
+    ssl: { rejectUnauthorized: false }  // Required for Vercel PostgreSQL
+  });
+  console.log('Using Vercel PostgreSQL database');
 } else {
   // Fallback to a local database for development
   console.log('No PostgreSQL URL found in environment variables; using local database');
