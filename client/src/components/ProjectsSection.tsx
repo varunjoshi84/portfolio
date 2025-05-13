@@ -1,12 +1,43 @@
 import { useQuery } from '@tanstack/react-query';
 import ProjectCard from './ProjectCard';
 import { Project } from '@shared/schema';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from './ui/skeleton';
+import { useEffect, useRef, useState } from 'react';
 
 export default function ProjectsSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  
   const { data: projects, isLoading, error } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
   });
+  
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      }
+    );
+    
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
 
   // Placeholder for loading state
   const LoadingSkeletons = () => (
@@ -29,9 +60,17 @@ export default function ProjectsSection() {
   );
 
   return (
-    <section id="projects" className="py-24 bg-darker relative">
+    <section 
+      id="projects" 
+      ref={sectionRef}
+      className="py-24 bg-darker relative overflow-hidden"
+    >
+      {/* Background elements */}
+      <div className="absolute -right-40 -top-40 w-80 h-80 bg-primary/5 rounded-full filter blur-3xl"></div>
+      <div className="absolute -left-40 -bottom-40 w-80 h-80 bg-secondary/5 rounded-full filter blur-3xl"></div>
+      
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 ${isVisible ? 'slide-up' : 'opacity-0'}`}>
           <h2 className="text-4xl font-bold mb-4">My <span className="gradient-text">Projects</span></h2>
           <p className="text-slate-300 max-w-2xl mx-auto">
             A collection of my latest work showcasing my skills and creative approach to problem solving.
@@ -50,8 +89,14 @@ export default function ProjectsSection() {
               <p>No projects found. Check back later!</p>
             </div>
           ) : (
-            projects?.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            projects?.map((project, index) => (
+              <div 
+                key={project.id} 
+                className={`${isVisible ? 'scale-in' : 'opacity-0'}`}
+                style={{animationDelay: `${100 + (index * 100)}ms`}}
+              >
+                <ProjectCard project={project} />
+              </div>
             ))
           )}
         </div>
