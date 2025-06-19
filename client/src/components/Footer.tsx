@@ -11,13 +11,13 @@ export default function Footer() {
             <p className="text-slate-400 mt-2 text-sm sm:text-base">Creating immersive digital experiences</p>
           </div>
           <div className="flex space-x-6">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
+            <a href="https://github.com/varunjoshi84" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
               <Github className="h-5 w-5 sm:h-6 sm:w-6" />
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
+            <a href="https://www.linkedin.com/in/varunjoshi84/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
               <Linkedin className="h-5 w-5 sm:h-6 sm:w-6" />
             </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
+            <a href="https://x.com/varunpndey" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition">
               <Twitter className="h-5 w-5 sm:h-6 sm:w-6" />
             </a>
           </div>

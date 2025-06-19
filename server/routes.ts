@@ -17,8 +17,8 @@ async function setupNodemailer() {
   transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'joshivarun266@gmail.com', // Your Gmail address
-      pass: 'zryr xmij rmww yjjp',      // Your app password
+      user: 'joshivarun266@gmail.com', // Updated Gmail address
+      pass: 'hvcq fdle lwpg vmge',      // Updated app password
     },
     tls: {
       rejectUnauthorized: false // For testing only - remove in real production

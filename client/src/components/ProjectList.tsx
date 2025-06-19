@@ -131,7 +131,19 @@ export default function ProjectList() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
-                      {project.technologies.map((tech, idx) => (
+                      {(Array.isArray(project.technologies)
+                        ? project.technologies
+                        : typeof project.technologies === 'string'
+                          ? (() => {
+                              try {
+                                const parsed = JSON.parse(project.technologies);
+                                return Array.isArray(parsed) ? parsed : project.technologies.split(',').map(t => t.trim());
+                              } catch {
+                                return project.technologies.split(',').map(t => t.trim());
+                              }
+                            })()
+                          : []
+                      ).map((tech, idx) => (
                         <span key={idx} className="inline-flex text-xs leading-5 font-semibold rounded bg-slate-800 px-2 py-1 text-slate-300">
                           {tech}
                         </span>

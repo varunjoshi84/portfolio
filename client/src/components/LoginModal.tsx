@@ -47,14 +47,6 @@ export default function LoginModal() {
         <DialogHeader>
           <div className="flex justify-between items-center">
             <DialogTitle className="text-2xl font-bold text-white">Admin Login</DialogTitle>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleLoginModal} 
-              className="text-slate-400 hover:text-white"
-            >
-              <X className="h-6 w-6" />
-            </Button>
           </div>
           <DialogDescription className="text-slate-400">
             Enter your credentials to access the admin dashboard
